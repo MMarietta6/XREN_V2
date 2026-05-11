@@ -43,6 +43,10 @@ public class StartupTutorialManager : MonoBehaviour
     public Material redLightMaterial;
     public Material greenLightMaterial;
 
+    [Header("Hold-to-Advance")]
+    [Tooltip("The HoldToAdvance component on the tutorial canvas.")]
+    public HoldToAdvance holdToAdvance;
+
     // ── Step Data ─────────────────────────────────────────────────────────────
 
     private struct TutorialStep
@@ -64,6 +68,10 @@ public class StartupTutorialManager : MonoBehaviour
         SetupButtonCallbacks();
 
         if (completionPanel != null) completionPanel.SetActive(false);
+
+        // Wire hold-to-advance
+        if (holdToAdvance != null)
+            holdToAdvance.manager = this;
 
         AdvanceStep();
     }
@@ -179,6 +187,9 @@ public class StartupTutorialManager : MonoBehaviour
 
         // Activate only the current step's button
         ActivateOnlyCurrentButton();
+
+        // Reset hold-to-advance for the new step
+        if (holdToAdvance != null) holdToAdvance.Reset();
     }
 
     void ActivateOnlyCurrentButton()
@@ -215,6 +226,9 @@ public class StartupTutorialManager : MonoBehaviour
             completionPanel.SetActive(true);
             StartCoroutine(AnimateCompletion());
         }
+
+        // Hide hold-to-advance on completion
+        if (holdToAdvance != null) holdToAdvance.gameObject.SetActive(false);
     }
 
     IEnumerator AnimateCompletion()
